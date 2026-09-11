@@ -1,0 +1,27 @@
+# ── .NET build output ────────────────────────────────────────────────────
+**/bin/
+**/obj/
+
+# ── Angular / Node ───────────────────────────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+
+# ── IDE / OS ─────────────────────────────────────────────────────────────
+.vs/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/settings.json
+!.vscode/tasks.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# ── Local artifacts ──────────────────────────────────────────────────────
+*.user
+*.suo
+*.log
+*.tmp
+TestResults/
+coverage/

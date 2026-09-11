@@ -1,0 +1,113 @@
+<div class="page">
+  <header class="page__header">
+    <h1>Requests</h1>
+    <p class="page__subtitle">Search and filter requests visible to the current user.</p>
+  </header>
+
+  <!--
+    Exercise-only identity. There is no login, token or session in this assignment: the backend
+    contract reads X-User-Id / X-Is-Admin headers, and any client could claim to be an
+    administrator. Authorization itself is enforced server-side inside the database query.
+    In production this panel would be replaced by authenticated claims.
+  -->
+  <section class="identity" aria-labelledby="identity-heading">
+    <h2 id="identity-heading" class="identity__title">Current User</h2>
+
+    <div class="identity__controls">
+      <div class="field">
+        <label for="userId">User ID</label>
+        <input
+          id="userId"
+          type="number"
+          min="1"
+          step="1"
+          class="identity__userId"
+          [value]="draftUserId()"
+          (change)="onUserIdChange($any($event.target).value)"
+        />
+      </div>
+
+      <div class="field field--checkbox">
+        <input
+          id="isAdmin"
+          type="checkbox"
+          [checked]="draftIsAdmin()"
+          (change)="onIsAdminChange($any($event.target).checked)"
+        />
+        <label for="isAdmin">Administrator</label>
+      </div>
+    </div>
+
+    @if (!identityValid()) {
+      <p class="identity__error" role="alert">User ID must be a whole number greater than zero.</p>
+    } @else {
+      <p class="identity__hint">
+        Applied on the next Search or Clear. Exercise mechanism only — not real authentication.
+      </p>
+    }
+  </section>
+
+  <app-request-filters
+    [disabled]="loading() || !identityValid()"
+    (search)="onSearch($event)"
+    (clear)="onClear()"
+  />
+
+  @if (error()) {
+    <div class="alert" role="alert">
+      <span>{{ error() }}</span>
+      <button type="button" class="alert__close" (click)="dismissError()" aria-label="Dismiss error">
+        &times;
+      </button>
+    </div>
+  }
+
+  <section class="results" aria-labelledby="results-heading">
+    <div class="results__bar">
+      <h2 id="results-heading" class="results__title">
+        Results
+        @if (hasSearched() && !error()) {
+          <span class="results__count">({{ totalCount() }})</span>
+        }
+      </h2>
+
+      @if (loading()) {
+        <span class="results__loading" aria-live="polite">Searching…</span>
+      }
+    </div>
+
+    <div [class.is-loading]="loading()">
+      <app-requests-table [requests]="requests()" [showNoResults]="showNoResults()" />
+    </div>
+
+    @if (showPagination()) {
+      <nav class="pager" aria-label="Pagination">
+        <button type="button" class="btn" [disabled]="!canPrevious()" (click)="onPreviousPage()">
+          Previous
+        </button>
+
+        <span class="pager__status">Page {{ page() }} of {{ totalPages() }}</span>
+
+        <button type="button" class="btn" [disabled]="!canNext()" (click)="onNextPage()">Next</button>
+
+        <div class="field pager__size">
+          <label for="pageSize">Per page</label>
+          <!--
+            [selected] lives on the options rather than [value] on the select: the options are
+            created by @for, so a [value] binding on the select runs before they exist and silently
+            falls back to the first option.
+          -->
+          <select
+            id="pageSize"
+            [disabled]="loading()"
+            (change)="onPageSizeChange($any($event.target).value)"
+          >
+            @for (size of pageSizeOptions; track size) {
+              <option [value]="size" [selected]="size === pageSize()">{{ size }}</option>
+            }
+          </select>
+        </div>
+      </nav>
+    }
+  </section>
+</div>

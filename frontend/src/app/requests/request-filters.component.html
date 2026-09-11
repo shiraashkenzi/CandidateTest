@@ -1,0 +1,80 @@
+<form class="filters" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="filters__grid">
+    <div class="field">
+      <label for="requestNumber">Request Number</label>
+      <input
+        id="requestNumber"
+        type="text"
+        formControlName="requestNumber"
+        placeholder="e.g. 0042"
+        autocomplete="off"
+      />
+      <small class="field__hint">Partial match</small>
+    </div>
+
+    <fieldset class="field statuses">
+      <legend class="statuses__legend">Status</legend>
+      @for (option of statusOptions; track option.value) {
+        <div class="statuses__option">
+          <input
+            type="checkbox"
+            [id]="'status-' + option.value"
+            [checked]="isStatusSelected(option.value)"
+            (change)="onStatusToggle(option.value, $any($event.target).checked)"
+          />
+          <label [for]="'status-' + option.value">{{ option.label }}</label>
+        </div>
+      }
+      <small class="field__hint">Select any number of statuses</small>
+    </fieldset>
+
+    <div class="field">
+      <label for="requestType">Request Type</label>
+      <select id="requestType" formControlName="requestType">
+        <option [ngValue]="null">All types</option>
+        @for (option of typeOptions; track option.value) {
+          <option [ngValue]="option.value">{{ option.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="createdFrom">Created From</label>
+      <input id="createdFrom" type="date" formControlName="createdFrom" />
+    </div>
+
+    <div class="field">
+      <label for="createdTo">Created To</label>
+      <input id="createdTo" type="date" formControlName="createdTo" />
+    </div>
+
+    <div class="field">
+      <label for="sortBy">Sort By</label>
+      <select id="sortBy" formControlName="sortBy">
+        @for (option of sortFieldOptions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="sortDirection">Direction</label>
+      <select id="sortDirection" formControlName="sortDirection">
+        @for (option of sortDirectionOptions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  @if (dateRangeInvalid) {
+    <p class="filters__error" role="alert">
+      “Created From” must be the same as or earlier than “Created To”.
+    </p>
+  }
+
+  <div class="filters__actions">
+    <button type="submit" class="btn btn--primary" [disabled]="disabled()">Search</button>
+    <button type="button" class="btn" [disabled]="disabled()" (click)="onClear()">Clear</button>
+  </div>
+</form>

@@ -1,0 +1,61 @@
+.filters {
+  border: 1px solid #dde1e7;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 16px;
+  background: #fff;
+}
+
+.filters__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px 18px;
+  align-items: start;
+}
+
+.field__hint {
+  color: #6b7280;
+  font-size: 12px;
+}
+
+/* Status checkbox group — a fieldset/legend so the four boxes are announced as one group. */
+.statuses {
+  border: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  gap: 2px;
+}
+
+.statuses__legend {
+  padding: 0;
+  margin-bottom: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #5b6472;
+}
+
+.statuses__option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.statuses__option label {
+  font-weight: 400;
+  color: #1f2733;
+}
+
+.filters__error {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: #b42318;
+}
+
+.filters__actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #eceff3;
+}

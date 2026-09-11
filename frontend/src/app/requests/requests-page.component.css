@@ -1,0 +1,134 @@
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 20px 48px;
+}
+
+.page__header h1 {
+  margin: 0 0 4px;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.page__subtitle {
+  margin: 0 0 20px;
+  color: #5b6472;
+}
+
+/* ── Current user (exercise only) ─────────────────────────────────────────── */
+
+.identity {
+  border: 1px solid #dde1e7;
+  border-left: 3px solid #8a94a6;
+  border-radius: 6px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  background: #f7f8fa;
+}
+
+.identity__title {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #5b6472;
+}
+
+.identity__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-end;
+}
+
+.identity__userId {
+  width: 110px;
+}
+
+.identity__hint {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.identity__error {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: #b42318;
+}
+
+/* ── Error banner ─────────────────────────────────────────────────────────── */
+
+.alert {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid #f3b8b2;
+  background: #fdf3f2;
+  color: #912018;
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+}
+
+.alert__close {
+  border: none;
+  background: none;
+  color: inherit;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+/* ── Results ──────────────────────────────────────────────────────────────── */
+
+.results__bar {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.results__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.results__count {
+  font-weight: 400;
+  color: #5b6472;
+}
+
+.results__loading {
+  font-size: 13px;
+  color: #5b6472;
+}
+
+/* Single declaration, no animation: results stay readable while the next page loads. */
+.is-loading {
+  opacity: 0.6;
+}
+
+/* ── Pagination ───────────────────────────────────────────────────────────── */
+
+.pager {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.pager__status {
+  font-size: 14px;
+  color: #3d4552;
+  min-width: 130px;
+}
+
+.pager__size {
+  margin-left: auto;
+}
