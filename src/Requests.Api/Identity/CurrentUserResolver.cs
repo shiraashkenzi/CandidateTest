@@ -4,17 +4,13 @@ namespace Requests.Api.Identity;
 public readonly record struct CurrentUser(int UserId, bool IsAdministrator);
 
 /// <summary>
-/// Resolves the exercise's header-based identity.
+/// Resolves the exercise's header-based identity. Resolution fails closed: a missing, malformed or
+/// non-positive user id is rejected rather than defaulting to a user.
 /// <para>
-/// IMPORTANT: <c>X-User-Id</c> / <c>X-Is-Admin</c> are an exercise stand-in and are entirely
-/// client-controlled — any caller can send <c>X-Is-Admin: true</c>. In a production system the user
-/// id and role must come from authenticated claims on <c>HttpContext.User</c>, established by a real
-/// authentication scheme. Only this resolver would need to change: the authorization *rule* is
-/// already enforced server-side inside the database query, not here and not in the client.
-/// </para>
-/// <para>
-/// Unlike the previous implementation, resolution fails closed. A missing, malformed or non-positive
-/// user id is rejected rather than silently defaulting to user 1.
+/// <c>X-User-Id</c> / <c>X-Is-Admin</c> are an exercise stand-in and are entirely client-controlled —
+/// any caller can send <c>X-Is-Admin: true</c>. In production they would come from authenticated
+/// claims, and only this resolver would change: the authorization rule itself is enforced inside the
+/// query, not here and not in the client.
 /// </para>
 /// </summary>
 public static class CurrentUserResolver
@@ -23,9 +19,8 @@ public static class CurrentUserResolver
     public const string IsAdminHeader = "X-Is-Admin";
 
     /// <summary>
-    /// Attempts to resolve the caller. On failure, <paramref name="error"/> describes the problem and
-    /// <paramref name="isMissing"/> distinguishes "no identity asserted" (401) from "identity
-    /// asserted but invalid" (400).
+    /// On failure, <paramref name="isMissing"/> distinguishes "no identity asserted" (401) from
+    /// "identity asserted but invalid" (400).
     /// </summary>
     public static bool TryResolve(
         HttpRequest request,

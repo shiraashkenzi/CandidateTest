@@ -21,15 +21,12 @@ public class RequestsController : ControllerBase
     /// Searches requests visible to the caller.
     /// </summary>
     /// <remarks>
-    /// For the exercise, the current user is supplied through headers:
+    /// For the exercise, the current user is supplied through headers — see
+    /// <see cref="CurrentUserResolver"/>:
     /// <code>
     /// X-User-Id:  integer greater than zero (required)
     /// X-Is-Admin: true|false                (optional)
     /// </code>
-    /// In a real production system these must come from authenticated claims rather than
-    /// client-controlled headers — see <see cref="CurrentUserResolver"/>. The visibility rule itself
-    /// is enforced server-side within the database query, so the frontend is never trusted with it.
-    ///
     /// All filters are optional. Repeat the key for multiple statuses:
     /// <c>?statuses=New&amp;statuses=InProgress</c>.
     /// </remarks>
@@ -43,8 +40,7 @@ public class RequestsController : ControllerBase
     {
         if (!CurrentUserResolver.TryResolve(Request, out var currentUser, out var error, out var isMissing))
         {
-            // Missing header => no identity asserted at all (401).
-            // Present but unusable => a malformed request (400).
+            // No identity asserted at all (401) versus asserted but unusable (400).
             if (isMissing)
             {
                 return Problem(
@@ -74,13 +70,8 @@ public class RequestsController : ControllerBase
     }
 
     /// <summary>
-    /// Rejects <c>?statuses=1,2</c> and <c>?requestType=1,2</c>. Model binding would otherwise accept
-    /// them as a bitwise enum combination and return the wrong rows with a 200.
-    /// <para>
-    /// Reading the raw query string and wiring the failure into <c>ModelState</c> are HTTP concerns,
-    /// so they live here. <see cref="RequestSearchParameters.IsCommaCombinedValue"/> is only the
-    /// small, testable predicate that recognises the invalid comma-separated representation.
-    /// </para>
+    /// Rejects <c>?statuses=1,2</c> and <c>?requestType=1,2</c>, which model binding would otherwise
+    /// accept as a bitwise enum combination and answer with the wrong rows and a 200.
     /// </summary>
     private void RejectCommaCombinedEnums()
     {

@@ -4,16 +4,11 @@ using Requests.Domain.Entities;
 namespace Requests.Application.Requests;
 
 /// <summary>
-/// Client-supplied search input, bound directly from the query string by the API layer.
+/// Client-supplied search input, bound directly from the query string.
 /// <para>
-/// This type deliberately contains <b>no identity fields</b>. The current user id and the
-/// administrator flag live on <see cref="RequestSearchCriteria"/>, which only the service can build,
-/// so a caller cannot grant itself administrator visibility through the query string.
-/// </para>
-/// <para>
-/// Validation attributes live here (rather than on a separate API model) so there is a single input
-/// model. <see cref="IValidatableObject"/> and the DataAnnotations attributes are BCL types, so this
-/// adds no dependency on ASP.NET Core.
+/// Deliberately contains <b>no identity fields</b>: the current user id and the administrator flag
+/// live on <see cref="RequestSearchCriteria"/>, which only the service can build, so a caller cannot
+/// grant itself administrator visibility through the query string.
 /// </para>
 /// </summary>
 public sealed class RequestSearchParameters : IValidatableObject
@@ -22,9 +17,8 @@ public sealed class RequestSearchParameters : IValidatableObject
     public const int DefaultPageSize = 20;
 
     /// <summary>
-    /// Upper bound on <see cref="Page"/>. Bounding it keeps <c>(page - 1) * pageSize</c> far below
-    /// <see cref="int.MaxValue"/>, so the offset can never overflow and wrap around to an earlier
-    /// page. Deep paging beyond this point is not a supported access pattern anyway.
+    /// Keeps <c>(page - 1) * pageSize</c> far below <see cref="int.MaxValue"/>, so the offset cannot
+    /// overflow and wrap around to an earlier page.
     /// </summary>
     public const int MaxPage = 1_000_000;
 
@@ -34,9 +28,8 @@ public sealed class RequestSearchParameters : IValidatableObject
     /// <summary>
     /// Repeat the query key for multiple values: <c>?statuses=New&amp;statuses=InProgress</c>.
     /// <para>
-    /// Typed as an array rather than a read-only collection interface on purpose: ASP.NET Core's
-    /// collection model binder cannot instantiate read-only interfaces, and would silently bind
-    /// <c>null</c> instead of the supplied values.
+    /// An array rather than a read-only collection interface: ASP.NET Core's collection binder
+    /// cannot instantiate read-only interfaces and would silently bind <c>null</c>.
     /// </para>
     /// </summary>
     public RequestStatus[]? Statuses { get; init; }
@@ -47,18 +40,8 @@ public sealed class RequestSearchParameters : IValidatableObject
     public DateTime? CreatedFrom { get; init; }
 
     /// <summary>
-    /// Upper bound on <see cref="Request.CreatedAt"/>. Interpreted as UTC.
-    /// <para>
-    /// A date-only value (midnight) covers the <b>whole of that day</b>: <c>createdTo=2026-01-15</c>
-    /// matches everything created on 15 January, because it is normalized to the exclusive bound
-    /// <c>CreatedAt &lt; 2026-01-16T00:00:00Z</c>. An exclusive next-day boundary is used rather than
-    /// an inclusive <c>23:59:59.999</c> so the result does not depend on the column's timestamp
-    /// precision.
-    /// </para>
-    /// <para>
-    /// A value with an explicit non-midnight time is left alone and stays an <b>inclusive</b> bound
-    /// (<c>CreatedAt &lt;= value</c>), so a caller asking for a precise instant gets exactly that.
-    /// </para>
+    /// Upper bound on <see cref="Request.CreatedAt"/>. Interpreted as UTC. A date-only value covers
+    /// the whole of that day; a value with an explicit time stays an inclusive bound.
     /// </summary>
     public DateTime? CreatedTo { get; init; }
 
@@ -73,13 +56,9 @@ public sealed class RequestSearchParameters : IValidatableObject
     public int PageSize { get; init; } = DefaultPageSize;
 
     /// <summary>
-    /// True when a raw query value uses the comma form, e.g. <c>?statuses=1,2</c>.
-    /// <para>
-    /// .NET parses a comma-separated enum value as a <i>bitwise combination</i>, even for an enum
-    /// that is not <c>[Flags]</c>: <c>1,2</c> becomes <c>1 | 2 = 3</c>, which is a different, valid
-    /// status. Left unchecked the request would succeed and silently return the wrong rows, so the
-    /// API rejects the comma form instead. Multiple values must be sent as repeated keys.
-    /// </para>
+    /// True for the comma form, e.g. <c>?statuses=1,2</c>. .NET parses that as a bitwise combination
+    /// even for a non-<c>[Flags]</c> enum — <c>1,2</c> becomes <c>1 | 2 = 3</c>, a different valid
+    /// status — so it is rejected rather than silently returning the wrong rows.
     /// </summary>
     public static bool IsCommaCombinedValue(string? rawQueryValue) =>
         rawQueryValue is not null && rawQueryValue.Contains(',');

@@ -11,16 +11,12 @@ export type RequestSearchQuery = RequestSearchParams & {
 };
 
 /**
- * The only place in the app that talks HTTP. Stateless by design: it builds the request, returns the
- * typed response, and lets the caller decide what success and failure mean for the UI.
+ * The only place in the app that talks HTTP. Stateless: it builds the request and returns the typed
+ * response, leaving the caller to decide what success and failure mean for the UI.
  */
 @Injectable({ providedIn: 'root' })
 export class RequestsApiService {
-  /**
-   * Relative on purpose. In development the Angular dev-server proxy forwards `/api` to
-   * http://localhost:60702; in any other environment it resolves against whatever origin serves the
-   * app. No backend URL is hardcoded anywhere in the frontend.
-   */
+  /** Relative so the dev-server proxy handles it and no backend URL is hardcoded. */
   static readonly ENDPOINT = '/api/requests';
 
   private readonly http = inject(HttpClient);
@@ -28,14 +24,12 @@ export class RequestsApiService {
   searchRequests(query: RequestSearchQuery, identity: CurrentUser): Observable<PagedResult<RequestDto>> {
     let params = new HttpParams();
 
-    // Optional filters are omitted entirely when empty, so the backend applies no predicate.
     const requestNumber = query.requestNumber.trim();
     if (requestNumber) {
       params = params.set('requestNumber', requestNumber);
     }
 
-    // Repeated keys (?statuses=1&statuses=2). A comma-joined value would fail model binding
-    // on the backend with a 400.
+    // Repeated keys (?statuses=1&statuses=2); the backend rejects a comma-joined value.
     for (const status of query.statuses) {
       params = params.append('statuses', status);
     }
@@ -44,9 +38,8 @@ export class RequestsApiService {
       params = params.set('requestType', query.requestType);
     }
 
-    // Sent verbatim as YYYY-MM-DD. Deliberately not passed through Date/toISOString, which would
-    // apply the browser's timezone offset and can shift the day. The backend owns the range
-    // semantics, including widening a date-only upper bound to cover the whole day.
+    // Sent verbatim as YYYY-MM-DD, not through Date/toISOString, which would apply the browser's
+    // timezone offset and can shift the day. The backend owns the range semantics.
     if (query.createdFrom) {
       params = params.set('createdFrom', query.createdFrom);
     }

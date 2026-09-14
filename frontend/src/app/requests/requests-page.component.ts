@@ -22,13 +22,9 @@ interface ProblemDetails {
 }
 
 /**
- * Orchestrates the screen and owns every piece of applied state.
- *
- * Draft vs applied is the key rule, and it covers both the filters and the exercise identity:
- * editing the form or the identity inputs changes only draft state. Search and Clear commit the
- * draft into `criteria` / `appliedIdentity`; pagination reuses whatever was last committed. That is
- * what stops "page 1 loaded for user 3, id edited to 5, Next clicked" from silently returning page 2
- * for user 5.
+ * Orchestrates the screen and owns every piece of applied state. Editing the filter form or the
+ * identity inputs changes draft state only; Search and Clear commit it, and pagination reuses
+ * whatever was last committed, so paging can never switch filters or user mid-way.
  */
 @Component({
   selector: 'app-requests-page',
@@ -71,7 +67,6 @@ export class RequestsPageComponent implements OnInit {
   );
 
   ngOnInit(): void {
-    // One request on load with the defaults, so results are visible without pressing Search.
     this.runSearch();
   }
 
@@ -157,7 +152,7 @@ export class RequestsPageComponent implements OnInit {
         this.loading.set(false);
       },
       error: (err: HttpErrorResponse) => {
-        // Previous results are deliberately left on screen; the banner explains what failed.
+        // Previous results stay on screen; the banner explains what failed.
         this.error.set(this.describeError(err));
         this.hasSearched.set(true);
         this.loading.set(false);
@@ -166,11 +161,9 @@ export class RequestsPageComponent implements OnInit {
   }
 
   /**
-   * Maps a failed response to one friendly sentence. Raw bodies and stack traces are never shown.
-   *
-   * For a 400 we render the *values* of the RFC 7807 `errors` object, which are already readable
-   * sentences ("page must be between 1 and 1000000."). That deliberately ignores the keys, so the
-   * backend's PascalCase key names never need mapping back to form control names.
+   * Maps a failed response to one friendly sentence; raw bodies are never shown. For a 400 only the
+   * *values* of the RFC 7807 `errors` object are rendered — they are already readable sentences, so
+   * the backend's PascalCase keys never need mapping back to form control names.
    */
   private describeError(err: HttpErrorResponse): string {
     if (err.status === 0) {

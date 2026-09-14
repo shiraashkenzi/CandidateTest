@@ -1,13 +1,7 @@
 /**
- * Types and constants for the Requests screen.
- *
- * Enums are modelled as `as const` option arrays rather than TypeScript `enum`s, for three reasons:
- *  - a numeric `enum` accepts *any* number without a type error, which is wrong for a fixed contract;
- *  - the dropdowns need ordered {value, label} lists anyway, so this is the single source for both
- *    the options and the display labels — adding a status means editing exactly one line;
- *  - `as const` plus a derived union narrows more strictly than a numeric enum.
- *
- * The backend serializes these enums as integers; that contract is unchanged.
+ * Enums are `as const` option arrays rather than TypeScript `enum`s: a numeric `enum` accepts any
+ * number without a type error, and the dropdowns need ordered {value, label} lists anyway, so one
+ * array is the single source for the options, the labels and the union type.
  */
 
 // ── Enum contracts (must match the backend) ─────────────────────────────────
@@ -30,7 +24,7 @@ export const REQUEST_TYPE_OPTIONS = [
 
 export type RequestType = (typeof REQUEST_TYPE_OPTIONS)[number]['value'];
 
-// ── Sorting (whitelist mirrors the backend; `id` is deliberately not offered) ─
+// ── Sorting (mirrors the backend whitelist; `id` is not offered) ────────────
 
 export const SORT_FIELD_OPTIONS = [
   { value: 'createdAt', label: 'Created At' },
@@ -88,10 +82,7 @@ export interface RequestSearchParams {
   sortDirection: SortDirection;
 }
 
-/**
- * Exercise-only identity. There is no login, token or session: the backend contract for this
- * assignment reads `X-User-Id` / `X-Is-Admin` headers. Authorization itself is enforced server-side.
- */
+/** Exercise-only identity, sent as `X-User-Id` / `X-Is-Admin`. Not authentication. */
 export interface CurrentUser {
   userId: number;
   isAdmin: boolean;

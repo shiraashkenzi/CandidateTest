@@ -19,23 +19,19 @@ public class RequestsDbContext : DbContext
         {
             entity.HasKey(r => r.Id);
 
-            // Composite indexes covering the two halves of the authorization predicate together
-            // with the default sort, so a regular user's page can be served from an index.
+            // Composites cover the two halves of the authorization predicate plus the default sort.
             entity.HasIndex(r => new { r.OwnerId, r.CreatedAt });
             entity.HasIndex(r => new { r.AssignedToUserId, r.CreatedAt });
 
-            // Single-column indexes for the optional filters and the administrator default sort.
             entity.HasIndex(r => r.Status);
             entity.HasIndex(r => r.RequestType);
             entity.HasIndex(r => r.CreatedAt);
 
-            // Non-unique on purpose: the seeder happens to generate distinct values, but nothing in
-            // the model enforces uniqueness, so asserting it here would be incorrect.
+            // Non-unique: nothing in the model enforces uniqueness of the request number.
             entity.HasIndex(r => r.RequestNumber);
         });
 
-        // Note: the EF Core InMemory provider ignores relational indexes entirely. They are declared
-        // here to document the intended production schema, which is what the read query above needs
-        // in order to stay efficient at scale on a relational provider.
+        // The InMemory provider ignores relational indexes; these document the intended production
+        // schema the search query depends on at scale.
     }
 }

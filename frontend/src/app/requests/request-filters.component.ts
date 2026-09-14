@@ -21,8 +21,8 @@ import {
 } from './request.models';
 
 /**
- * Rejects an inverted range. The inputs produce `YYYY-MM-DD`, which compares correctly as a string,
- * so no Date parsing is needed. Backend validation remains authoritative.
+ * Rejects an inverted range. `YYYY-MM-DD` compares correctly as a string, so no Date parsing is
+ * needed. Backend validation remains authoritative.
  */
 export const dateRangeValidator: ValidatorFn = (group: AbstractControl): ValidationErrors | null => {
   const from = group.get('createdFrom')?.value as string;
@@ -31,8 +31,8 @@ export const dateRangeValidator: ValidatorFn = (group: AbstractControl): Validat
 };
 
 /**
- * Owns the *draft* filter state only. Nothing here is applied until Search is submitted, and this
- * component never calls the API or knows about paging, results or errors.
+ * Owns the draft filter state only: nothing is applied until Search is submitted, and this component
+ * never calls the API or knows about paging, results or errors.
  */
 @Component({
   selector: 'app-request-filters',
@@ -76,10 +76,9 @@ export class RequestFiltersComponent {
   }
 
   /**
-   * The checkbox group is managed by hand rather than through a FormArray so the control keeps
-   * holding a plain array of the selected values — the shape the API service already expects.
-   * Rebuilding from the option list keeps the array in a stable, canonical order regardless of the
-   * order the user ticks the boxes.
+   * Managed by hand rather than through a FormArray so the control keeps holding a plain array of
+   * selected values. Rebuilding from the option list keeps that array in a canonical order whatever
+   * order the boxes are ticked in.
    */
   onStatusToggle(value: RequestStatus, checked: boolean): void {
     const selected = this.form.controls.statuses.value;

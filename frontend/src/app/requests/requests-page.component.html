@@ -5,10 +5,8 @@
   </header>
 
   <!--
-    Exercise-only identity. There is no login, token or session in this assignment: the backend
-    contract reads X-User-Id / X-Is-Admin headers, and any client could claim to be an
-    administrator. Authorization itself is enforced server-side inside the database query.
-    In production this panel would be replaced by authenticated claims.
+    Exercise-only identity: the backend contract reads X-User-Id / X-Is-Admin headers, so any client
+    could claim to be an administrator. Authorization itself is enforced server-side in the query.
   -->
   <section class="identity" aria-labelledby="identity-heading">
     <h2 id="identity-heading" class="identity__title">Current User</h2>
@@ -93,9 +91,8 @@
         <div class="field pager__size">
           <label for="pageSize">Per page</label>
           <!--
-            [selected] lives on the options rather than [value] on the select: the options are
-            created by @for, so a [value] binding on the select runs before they exist and silently
-            falls back to the first option.
+            [selected] on the options, not [value] on the select: @for creates the options after the
+            select's own bindings run, so [value] would silently fall back to the first option.
           -->
           <select
             id="pageSize"

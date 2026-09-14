@@ -1,16 +1,8 @@
 namespace Requests.Application.Requests;
 
 /// <summary>
-/// The fields a client is allowed to sort by.
-/// <para>
-/// Deliberately an explicit whitelist rather than reflection over the entity: it keeps the set of
-/// sortable columns a conscious decision, and prevents a client from ordering by a column that has
-/// no index (or that should not be exposed at all).
-/// </para>
-/// <para>
-/// <c>Id</c> is intentionally absent. It is used only as an internal tiebreaker to keep pagination
-/// stable, not as a client-selectable option.
-/// </para>
+/// The fields a client is allowed to sort by. <c>Id</c> is intentionally absent: it is used only as
+/// an internal tiebreaker to keep pagination stable, not as a client-selectable option.
 /// </summary>
 public enum RequestSortField
 {
@@ -28,19 +20,15 @@ public enum RequestSortDirection
 
 /// <summary>
 /// Parsing for the client-supplied <c>sortBy</c> / <c>sortDirection</c> values.
-/// Single source of truth: both <see cref="RequestSearchParameters"/> validation and
-/// <see cref="RequestService"/> call these, so the whitelist is never duplicated.
 /// </summary>
 public static class RequestSorting
 {
     public const string DefaultSortBy = "createdAt";
     public const string DefaultSortDirection = "desc";
 
-    /// <summary>Supported <c>sortBy</c> values, for use in validation messages.</summary>
     public static IReadOnlyList<string> SupportedFields { get; } =
         ["requestNumber", "status", "requestType", "createdAt"];
 
-    /// <summary>Supported <c>sortDirection</c> values, for use in validation messages.</summary>
     public static IReadOnlyList<string> SupportedDirections { get; } = ["asc", "desc"];
 
     public static bool TryParseField(string? value, out RequestSortField field)
